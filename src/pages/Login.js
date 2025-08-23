@@ -1,11 +1,16 @@
+// src/pages/Login.jsx
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { auth, csrf } from "../api/axios"; // <-- from the axios file I sent
 import "../styles/Auth.css";
 
 export default function Login() {
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
     email: "",
     password: "",
-    remember: false,
+    remember: false, // UI only (your backend always "remember"s right now)
   });
   const [showPwd, setShowPwd] = useState(false);
   const [errors, setErrors] = useState({});
@@ -29,11 +34,43 @@ export default function Login() {
   const onSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
+
     setBusy(true);
+    setErrors({});
     try {
-      // TODO: call your backend here (POST /login)
-      // await api.login(form)
-      alert("Logged in! (wire this to your backend)");
+      // 1) Prime CSRF cookie (sets XSRF-TOKEN + laravel_session)
+      await csrf();
+
+      // 2) Session login (Laravel routes/web.php -> AuthController@login)
+      await auth.login({
+        email: form.email,
+        password: form.password,
+        // remember: form.remember,  // uncomment if your backend reads it
+      });
+
+      // 3) Verify session and stash user if you want
+      const { data } = await auth.me(); // GET /user
+      window.localStorage.setItem("edutrack_user", JSON.stringify(data.user));
+
+      // 4) Go somewhere
+      navigate("/dashboard");
+    } catch (err) {
+      const res = err?.response;
+      if (res?.status === 422) {
+        setErrors((e) => ({
+          ...e,
+          form: res.data?.message || "Invalid credentials",
+        }));
+      } else if (res?.status === 419) {
+        setErrors((e) => ({
+          ...e,
+          form: "Session/CSRF mismatch. Refresh and try again.",
+        }));
+      } else if (res?.data?.message) {
+        setErrors((e) => ({ ...e, form: res.data.message }));
+      } else {
+        setErrors((e) => ({ ...e, form: "Login failed. Please try again." }));
+      }
     } finally {
       setBusy(false);
     }
@@ -50,6 +87,12 @@ export default function Login() {
       {/* Card */}
       <section className="container auth-wrap">
         <form className="auth-card card" onSubmit={onSubmit} noValidate>
+          {errors.form && (
+            <div className="alert alert-error" role="alert">
+              {errors.form}
+            </div>
+          )}
+
           <div className="grid" style={{ gridTemplateColumns: "1fr" }}>
             <div className="field">
               <label>University Email</label>
@@ -101,14 +144,19 @@ export default function Login() {
           </div>
 
           <div className="actions between">
-            <a href="/forgot-password" className="link">Forgot password?</a>
+            <a href="/forgot-password" className="link">
+              Forgot password?
+            </a>
             <button className="btn btn-primary" type="submit" disabled={busy}>
               {busy ? "Signing in..." : "Login"}
             </button>
           </div>
 
           <div className="auth-alt">
-            Don’t have an account? <a className="link" href="/signup">Create one</a>
+            Don’t have an account?{" "}
+            <a className="link" href="/signup">
+              Create one
+            </a>
           </div>
         </form>
       </section>

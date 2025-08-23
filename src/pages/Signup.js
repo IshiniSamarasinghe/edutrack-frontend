@@ -1,11 +1,15 @@
 import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { auth, csrf } from "../api/axios";
 import "../styles/Auth.css";
 
 export default function SignUp() {
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
     fullName: "",
     universityEmail: "",
-    indexNo: "",
+    indexNo: "",      // optional UI field; only saved if backend supports it
     password: "",
     confirm: "",
   });
@@ -22,8 +26,10 @@ export default function SignUp() {
     const err = {};
     if (!form.fullName.trim()) err.fullName = "Required";
     if (!form.universityEmail.trim()) err.universityEmail = "Required";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.universityEmail))
-      err.universityEmail = "Enter a valid email";
+    // Restrict to your uni domain
+    else if (!/^[^\s@]+@stu\.kln\.ac\.lk$/i.test(form.universityEmail)) {
+      err.universityEmail = "Use your university email (@stu.kln.ac.lk).";
+    }
     if (!form.password) err.password = "Required";
     else if (form.password.length < 6) err.password = "Min 6 characters";
     if (!form.confirm) err.confirm = "Confirm your password";
@@ -35,11 +41,46 @@ export default function SignUp() {
   const onSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
+
     setBusy(true);
+    setErrors({});
     try {
-      // TODO: call your API here
-      // await api.signup(form)
-      alert("Signed up! (wire this to your backend)");
+      // 1) CSRF
+      await csrf();
+
+      // 2) Register (Laravel expects: name, email, password)
+      await auth.register({
+        name: form.fullName,
+        email: form.universityEmail,
+        password: form.password,
+        // If backend accepts it, also send: index_no: form.indexNo
+      });
+
+      // 3) Auto-login (keeps UX smooth)
+      await auth.login({ email: form.universityEmail, password: form.password });
+
+      // 4) Optionally fetch and store user (if you rely on it elsewhere)
+      const me = await auth.me();
+      window.localStorage.setItem("edutrack_user", JSON.stringify(me.data.user));
+
+      navigate("/dashboard");
+    } catch (err) {
+      const res = err?.response;
+
+      // Laravel validation errors: { message, errors: { field: ['msg'] } }
+      if (res?.status === 422) {
+        const v = res.data?.errors || {};
+        setErrors({
+          form: res.data?.message || "Please fix the errors below.",
+          fullName: v.name?.[0],
+          universityEmail: v.email?.[0],
+          password: v.password?.[0],
+        });
+      } else if (res?.data?.message) {
+        setErrors({ form: res.data.message });
+      } else {
+        setErrors({ form: "Sign up failed. Please try again." });
+      }
     } finally {
       setBusy(false);
     }
@@ -56,6 +97,12 @@ export default function SignUp() {
       {/* Card */}
       <section className="container auth-wrap">
         <form className="auth-card card" onSubmit={onSubmit} noValidate>
+          {errors.form && (
+            <div className="alert alert-error" role="alert">
+              {errors.form}
+            </div>
+          )}
+
           <div className="grid">
             <div className="field">
               <label>Full Name</label>
@@ -64,6 +111,7 @@ export default function SignUp() {
                 value={form.fullName}
                 onChange={onChange}
                 placeholder="e.g., Ishini Samarasinghe"
+                autoComplete="name"
               />
               {errors.fullName && <span className="err">{errors.fullName}</span>}
             </div>
@@ -75,7 +123,8 @@ export default function SignUp() {
                 type="email"
                 value={form.universityEmail}
                 onChange={onChange}
-                placeholder="name@students.kln.ac.lk"
+                placeholder="name@stu.kln.ac.lk"
+                autoComplete="email"
               />
               {errors.universityEmail && <span className="err">{errors.universityEmail}</span>}
             </div>
@@ -99,6 +148,7 @@ export default function SignUp() {
                   value={form.password}
                   onChange={onChange}
                   placeholder="••••••••"
+                  autoComplete="new-password"
                 />
                 <button
                   type="button"
@@ -120,13 +170,14 @@ export default function SignUp() {
                 value={form.confirm}
                 onChange={onChange}
                 placeholder="••••••••"
+                autoComplete="new-password"
               />
               {errors.confirm && <span className="err">{errors.confirm}</span>}
             </div>
           </div>
 
           <div className="actions between">
-            <a href="/login" className="link">Already have an account? Login</a>
+            <Link className="link" to="/login">Already have an account? Login</Link>
             <button className="btn btn-primary" type="submit" disabled={busy}>
               {busy ? "Creating..." : "Create Account"}
             </button>
