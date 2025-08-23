@@ -1,0 +1,44 @@
+.navbar {
+  width: 100%;
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-inner {
+  max-width: 1400px; /* keep content aligned nicely */
+  margin: 0 auto;
+  padding: 14px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-family: "Playfair Display", serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-900);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  
+}
+.nav-links a:hover {
+  color: var(--brand-600);
+  font-weight: 600;   /* bold on hover */
+  text-decoration: none;  /* remove underline */
+}
+.btn.btn-primary:hover {
+  color: #0D5BB7;
+  background-color: white;
+  border: 1px solid #0D5BB7;
+}
+.btn.btn-outline:hover {
+  color: #ffffff;
+  background-color: #0D5BB7;
+  border: 1px solid #ffffff;
+}
+

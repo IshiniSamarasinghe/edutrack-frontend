@@ -1,0 +1,216 @@
+/* ===== Hero ===== */
+.hero {
+  background: var(--brand-600);
+  color: #fff;
+  padding: 56px 5% 64px;  /* reduced height */
+}
+.hero-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: center;
+}
+.hero h1 {
+  font-size: 42px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  color: white;
+}
+.hero-sub {
+  font-size: clamp(12px, 2.2vw, 16px);
+  color: #e7efff;
+  max-width: 700px;
+  margin: 0 auto 24px;
+}
+.hero-cta {
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 400;
+  color: white;
+  background-color: #FFA60C;
+  font-size: 13px;
+}
+.hero-cta:hover {
+  text-decoration: none;
+  background-color: #ffb733;
+  color: #fff;
+}
+
+/* ===== Section heading (reusable) ===== */
+.section-title {
+  text-align: center;
+  margin-bottom: 24px;
+  font-weight: 700;
+  font-family: "Playfair Display", serif;
+}
+
+/* ===== Academic Overview ===== */
+.overview-grid {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 8px 24px 48px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+
+  /* ✅ force equal height across rows */
+  grid-auto-rows: 1fr;
+  align-items: stretch;
+}
+
+.overview-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 100%;          /* ✅ fill the 1fr track */
+  min-height: 0;         /* ✅ flex children can shrink */
+  background: var(--card);
+  box-shadow: var(--shadow);
+  border-radius: var(--radius);
+  padding: 22px;
+}
+
+.overview-card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-900);
+  margin-bottom: 14px;
+}
+
+/* Push bottom links/buttons to the bottom consistently */
+.overview-card .link-cta {
+  margin-top: auto;
+  display: inline-block;
+  font-weight: 600;
+  color: var(--brand-600);
+  text-decoration: none;
+}
+.overview-card .link-cta:hover {
+  text-decoration: none;
+  font-weight: 400; 
+  color: var(--brand-400);
+}
+
+/* rows with pill + small button */
+.list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #f3f6fb;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 10px;
+  margin-bottom: 12px;
+}
+.pill {
+  font-weight: 400;
+  color: var(--text-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px;
+}
+
+/* small buttons */
+.btn.sm {
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+.btn-outline {
+  background: #fff;
+  color: var(--brand-600);
+  border: 1px solid var(--brand-600);
+}
+.btn-outline:hover {
+  background: var(--brand-600);
+  color: #fff;
+}
+
+/* Quick Actions */
+.action-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  background: #f3f6fb;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+.action-row:hover {
+  border-color: #cbd5e1;
+  background: #eef3fb;
+}
+.action-text strong {
+  display: block;
+  font-size: 14px;
+  color: var(--text-900);
+}
+.action-text span {
+  display: block;
+  font-size: 13px;
+  color: var(--text-400);
+  margin-top: 10px;
+  color: #0D5BB7;
+}
+.action-icon {
+  opacity: 0.7;
+}
+
+
+
+
+
+/* ===== Milestones band ===== */
+.milestones{
+  background: #f3f6fb;       /* light gray/blue band */
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 48px 5%;
+  margin-top: 8px;
+  margin-bottom: -50px;
+}
+.milestones-inner{
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: center;
+}
+.milestones h2{
+  font-family: "Playfair Display", serif;
+  font-weight: 700;
+  font-size: clamp(22px, 3vw, 26px);
+  margin: 0 0 10px 0;
+  color: var(--text-900);
+  letter-spacing: .2px;
+  text-transform: uppercase;
+}
+.milestones p{
+  color: var(--text-700);
+  max-width: 760px;
+  margin: 0 auto 20px;
+}
+.milestonecta{
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-weight: 400;
+  background-color: #FFA60C;
+  color: white;
+  font-size: 13px;
+}
+
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .overview-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 640px) {
+  .overview-grid {
+    grid-template-columns: 1fr;
+  }
+}
