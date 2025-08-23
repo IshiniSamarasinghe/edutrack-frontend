@@ -5,7 +5,7 @@
 }
 
 .nav-inner {
-  max-width: 1400px; /* keep content aligned nicely */
+  max-width: 1400px; /* center container */
   margin: 0 auto;
   padding: 14px 32px;
   display: flex;
@@ -24,21 +24,57 @@
   display: flex;
   align-items: center;
   gap: 18px;
-  
-}
-.nav-links a:hover {
-  color: var(--brand-600);
-  font-weight: 600;   /* bold on hover */
-  text-decoration: none;  /* remove underline */
-}
-.btn.btn-primary:hover {
-  color: #0D5BB7;
-  background-color: white;
-  border: 1px solid #0D5BB7;
-}
-.btn.btn-outline:hover {
-  color: #ffffff;
-  background-color: #0D5BB7;
-  border: 1px solid #ffffff;
 }
 
+.nav-links a {
+  text-decoration: none;
+  color: var(--text-800);
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.nav-links a:hover {
+  color: var(--brand-600);
+  font-weight: 600;
+}
+
+/* ---------- Button Styles ---------- */
+.nav-links .btn {
+  display: inline-block;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.4;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none !important; /* override link underline */
+}
+
+/* Solid blue button */
+.nav-links .btn-primary {
+  background-color: #1e56b3;
+  color: #fff !important;
+  border: 1px solid #1e56b3;
+}
+
+/* Outline button */
+.nav-links .btn-outline {
+  background-color: #fff;
+  color: #1e56b3 !important;
+  border: 1px solid #1e56b3;
+}
+
+/* Hover states */
+.nav-links .btn-primary:hover {
+  background-color: #fff;
+  color: #1e56b3 !important;
+  border-color: #1e56b3;
+}
+
+.nav-links .btn-outline:hover {
+  background-color: #1e56b3;
+  color: #fff !important;
+  border-color: #1e56b3;
+}

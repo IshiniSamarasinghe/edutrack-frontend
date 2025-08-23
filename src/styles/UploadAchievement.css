@@ -1,0 +1,62 @@
+.upload-modal {
+  max-width: 1500px !important;
+  width: 140% !important;      /* let it expand */
+  padding: 40px 38px;
+}
+
+
+.ua-field { margin-bottom: 16px; }
+.ua-field label {
+  display: block;
+  font-size: 13px;
+  color: #445266;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+.ua-field input {
+  width: 100%;
+  height: 40px;
+  border: 1.5px solid #9ec0f0;
+  border-radius: 6px;
+  outline: none;
+  padding: 0 10px;
+}
+.ua-field input:focus { border-color: #1e56b3; box-shadow: 0 0 0 2px rgba(30,86,179,0.12); }
+
+/* Dropzone */
+.ua-dropzone {
+  border: 1.5px solid #9ec0f0;
+  border-radius: 6px;
+  height: 120px;
+  display: grid;
+  place-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+.ua-dropzone .plus { font-size: 22px; color: #1e56b3; line-height: 1; }
+.ua-dropzone .dz-help { font-size: 13px; color: #6b7a90; width: 160px; text-align: center;}
+.ua-dropzone:hover { border-color: #1e56b3; }
+
+/* Preview chips */
+.ua-previews {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin: 12px 0 0;
+}
+.ua-chip {
+  max-width: 220px;
+  padding: 6px 10px;
+  background: #f1f5fb;
+  border: 1px solid #d7e4fb;
+  color: #2a3a55;
+  border-radius: 999px;
+  font-size: 12px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.actions.end {
+  margin-top: 28px;   /* 👈 increase this value until it feels right */
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Use existing .actions and .btn from ModalBase.css */
