@@ -12,12 +12,13 @@ function Dashboard() {
             From finding the right course to viewing your grades, EduTrack makes your academic
             journey smoother.
           </p>
-          <a href="#overview" className="btn btn-primary hero-cta">Get Started</a>
+          {/* ✅ Removed btn btn-primary */}
+          <a href="#overview" className="hero-cta">Get Started</a>
         </div>
       </section>
 
       {/* Placeholder for the next sections we’ll build next */}
-          {/* Academic Overview */}
+      {/* Academic Overview */}
       <section id="overview" className="section">
         <h2 className="section-title">Academic Overview</h2>
 

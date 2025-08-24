@@ -9,7 +9,8 @@ export default function SignUp() {
   const [form, setForm] = useState({
     fullName: "",
     universityEmail: "",
-    indexNo: "",      // optional UI field; only saved if backend supports it
+    indexNo: "",
+    pathway: "",     // ✅ new
     password: "",
     confirm: "",
   });
@@ -25,15 +26,26 @@ export default function SignUp() {
   const validate = () => {
     const err = {};
     if (!form.fullName.trim()) err.fullName = "Required";
+
     if (!form.universityEmail.trim()) err.universityEmail = "Required";
-    // Restrict to your uni domain
     else if (!/^[^\s@]+@stu\.kln\.ac\.lk$/i.test(form.universityEmail)) {
       err.universityEmail = "Use your university email (@stu.kln.ac.lk).";
     }
+
+    if (!form.indexNo.trim()) {
+      err.indexNo = "Required";
+    } else if (!/^(CT|ET|CS)\d{7}$/i.test(form.indexNo.trim())) {
+      err.indexNo = "Format: CT/ET/CS followed by 7 digits (e.g., CT2019001).";
+    }
+
+    if (!form.pathway) err.pathway = "Select your pathway";
+
     if (!form.password) err.password = "Required";
     else if (form.password.length < 6) err.password = "Min 6 characters";
+
     if (!form.confirm) err.confirm = "Confirm your password";
     else if (form.confirm !== form.password) err.confirm = "Passwords do not match";
+
     setErrors(err);
     return Object.keys(err).length === 0;
   };
@@ -48,18 +60,19 @@ export default function SignUp() {
       // 1) CSRF
       await csrf();
 
-      // 2) Register (Laravel expects: name, email, password)
+      // 2) Register
       await auth.register({
         name: form.fullName,
         email: form.universityEmail,
+        index_number: form.indexNo,   // ✅ send index number
+        pathway: form.pathway,        // ✅ send pathway
         password: form.password,
-        // If backend accepts it, also send: index_no: form.indexNo
       });
 
-      // 3) Auto-login (keeps UX smooth)
+      // 3) Auto-login
       await auth.login({ email: form.universityEmail, password: form.password });
 
-      // 4) Optionally fetch and store user (if you rely on it elsewhere)
+      // 4) Fetch current user and store
       const me = await auth.me();
       window.localStorage.setItem("edutrack_user", JSON.stringify(me.data.user));
 
@@ -74,6 +87,8 @@ export default function SignUp() {
           form: res.data?.message || "Please fix the errors below.",
           fullName: v.name?.[0],
           universityEmail: v.email?.[0],
+          indexNo: v.student_number?.[0],
+          pathway: v.pathway?.[0],
           password: v.password?.[0],
         });
       } else if (res?.data?.message) {
@@ -130,13 +145,47 @@ export default function SignUp() {
             </div>
 
             <div className="field">
-              <label>Index Number (optional)</label>
+              <label>Index Number (Required*)</label>
               <input
                 name="indexNo"
                 value={form.indexNo}
                 onChange={onChange}
-                placeholder="CT2019xxxx"
+                placeholder="CT2019001"
               />
+              {errors.indexNo && <span className="err">{errors.indexNo}</span>}
+            </div>
+
+            {/* ✅ New: Select Pathway */}
+            <div className="field">
+              <label>Select Pathway</label>
+              <select
+                name="pathway"
+                value={form.pathway}
+                onChange={onChange}
+                required
+              >
+                <option value="">-- Select your pathway --</option>
+
+                <optgroup label="CT (Computing)">
+                  <option value="software_systems">Software Systems</option>
+                  <option value="networking">Networking</option>
+                  <option value="gaming">Gaming</option>
+                </optgroup>
+
+                <optgroup label="ET (Engineering Tech)">
+                  <option value="material">Material</option>
+                  <option value="sustainable">Sustainable</option>
+                  <option value="automation">Automation</option>
+                </optgroup>
+
+                <optgroup label="CS (Computer Science)">
+                  <option value="cyber_security">Cyber Security</option>
+                  <option value="data_science">Data Science</option>
+                  <option value="ai">Artificial Intelligence</option>
+                  <option value="scientific_computing">Scientific Computing</option>
+                </optgroup>
+              </select>
+              {errors.pathway && <span className="err">{errors.pathway}</span>}
             </div>
 
             <div className="field">

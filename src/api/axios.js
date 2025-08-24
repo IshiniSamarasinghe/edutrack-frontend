@@ -1,66 +1,43 @@
 // src/api/axios.js
 import axios from "axios";
 
-// CRA env; fallback to localhost
 const API_BASE = (process.env.REACT_APP_API_URL || "http://localhost:8001").replace(/\/+$/, "");
 
-export const api = axios.create({
+const api = axios.create({
   baseURL: API_BASE,
   withCredentials: true,
   xsrfCookieName: "XSRF-TOKEN",
-  xsrfHeaderName: "X-XSRF-TOKEN", // we'll also set it manually just in case
-  headers: {
-    Accept: "application/json",
-    "X-Requested-With": "XMLHttpRequest",
-  },
+  xsrfHeaderName: "X-XSRF-TOKEN",
+  headers: { Accept: "application/json", "X-Requested-With": "XMLHttpRequest" },
   timeout: 15000,
 });
 
 let primed = false;
 export async function csrf() {
   if (primed) return;
-  if (process.env.NODE_ENV === "development") {
-    // eslint-disable-next-line no-console
-    console.log("API baseURL =", api.defaults.baseURL);
-  }
-  await api.get("/sanctum/csrf-cookie");
+  await api.get("/sanctum/csrf-cookie"); // sets XSRF-TOKEN + laravel_session
   primed = true;
 }
 
-// Helper to read & decode the XSRF cookie and attach header
 function ensureXsrfHeader(config) {
-  try {
-    const m = document.cookie.match(/(?:^|; )XSRF-TOKEN=([^;]+)/);
-    if (m) {
-      const token = decodeURIComponent(m[1]);
-      if (!config.headers) config.headers = {};
-      config.headers["X-XSRF-TOKEN"] = token;
-    }
-  } catch (_) {
-    /* noop */
+  const m = document.cookie.match(/(?:^|; )XSRF-TOKEN=([^;]+)/);
+  if (m) {
+    const token = decodeURIComponent(m[1]);
+    config.headers = { ...(config.headers || {}), "X-XSRF-TOKEN": token };
   }
 }
 
-// 1) Auto-prime CSRF before mutating requests
+// attach header on ALL requests; prime before mutating
 api.interceptors.request.use(async (config) => {
-  const needsCsrf =
-    /^(post|put|patch|delete)$/i.test(config.method || "get") &&
-    !String(config.url || "").includes("/sanctum/csrf-cookie");
-
-  if (needsCsrf) {
+  ensureXsrfHeader(config);
+  const mutating = /^(post|put|patch|delete)$/i.test(config.method || "get");
+  if (mutating) {
     await csrf();
-    ensureXsrfHeader(config); // make sure header is present even cross-origin
+    ensureXsrfHeader(config);
   }
   return config;
 });
 
-// 2) No auto-retry on 419/401 – show the error clearly instead of looping
-api.interceptors.response.use(
-  (r) => r,
-  (err) => Promise.reject(err)
-);
-
-// Simple auth helpers
 export const auth = {
   register: (data) => api.post("/register", data),
   login: (data) => api.post("/login", data),
@@ -68,4 +45,10 @@ export const auth = {
   logout: () => api.post("/logout"),
 };
 
+export const enrollments = {
+  create: (payload) => api.post("/api/enrollments", payload),
+  mine:   () => api.get("/api/my-courses"),
+};
+
+export { api };
 export default api;
