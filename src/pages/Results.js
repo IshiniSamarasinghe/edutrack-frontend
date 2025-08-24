@@ -1,71 +1,94 @@
+// src/pages/Results.js
+import { useEffect, useMemo, useState } from "react";
 import "../styles/Results.css";
 import Milestones from "../components/Milestones";
-
-const resultsData = {
-  "Level 3 | Semester 1": [
-    { year: "2020/2021", course: "CTEC3103 - WEB PROGRAMMING II", grade: "A" },
-    { year: "2020/2021", course: "CTEC3023 - MOBILE APPLICATION DEVELOPMENT", grade: "A" },
-    { year: "2020/2021", course: "CTEC3102 - ICT FOR BUSINESS", grade: "A" },
-    { year: "2020/2021", course: "CTEC3102 - PYTHON PROGRAMMING", grade: "A" },
-    { year: "2020/2021", course: "ENRP3102 - PRINCIPLES AND PRACTICES OF MANAGEMENT AND TECHNOLOGY MANAGEMENT", grade: "A" },
-    { year: "2020/2021", course: "SWST3022 - REQUIREMENTS ENGINEERING", grade: "A" },
-    { year: "2020/2021", course: "SWST3029 - APPLIED INFORMATION SYSTEMS", grade: "A" },
-  ],
-  "Level 3 | Semester 2": [
-    { year: "2020/2021", course: "CTEC3103 - WEB PROGRAMMING II", grade: "A" },
-    { year: "2020/2021", course: "CTEC3023 - MOBILE APPLICATION DEVELOPMENT", grade: "A" },
-    { year: "2020/2021", course: "CTEC3102 - ICT FOR BUSINESS", grade: "A" },
-    { year: "2020/2021", course: "CTEC3102 - PYTHON PROGRAMMING", grade: "A" },
-    { year: "2020/2021", course: "ENRP3102 - PRINCIPLES AND PRACTICES OF MANAGEMENT AND TECHNOLOGY MANAGEMENT", grade: "A" },
-    { year: "2020/2021", course: "SWST3022 - REQUIREMENTS ENGINEERING", grade: "A" },
-    { year: "2020/2021", course: "SWST3029 - APPLIED INFORMATION SYSTEMS", grade: "A" },
-  ],
-};
+import { api, auth, csrf } from "../api/axios"; // uses your axios instance
 
 export default function Results() {
+  const [items, setItems] = useState([]);   // API rows
+  const [gpa, setGpa] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState("");
+
+  const load = async () => {
+    setLoading(true);
+    setErr("");
+    try {
+      await csrf();
+      await auth.me(); // ensure session
+      const { data } = await api.get("/api/results");
+      setItems(Array.isArray(data?.items) ? data.items : []);
+      setGpa(data?.gpa ?? null);
+    } catch (e) {
+      setErr(e?.response?.data?.message || "Failed to load results.");
+      setItems([]);
+      setGpa(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { load(); }, []);
+
+  // Group by Level + Semester
+  const groups = useMemo(() => {
+    const map = new Map();
+    for (const r of items) {
+      const key = `L${r.level}S${r.semester}`;
+      if (!map.has(key)) map.set(key, { level: r.level, semester: r.semester, rows: [] });
+      map.get(key).rows.push(r);
+    }
+    return Array.from(map.values()).sort((a,b)=>(a.level-b.level)|| (a.semester-b.semester));
+  }, [items]);
+
   return (
     <main className="results">
-      {/* Header */}
       <section className="container results-head">
         <div className="results-title-wrap">
           <div>
             <h1>Academic Results</h1>
-            <p className="muted">
-              View your grades and academic performance across all enrolled courses.
-            </p>
+            <p className="muted">View your grades and academic performance across all enrolled courses.</p>
           </div>
-          <div className="gpa-badge">Overall GPA: <span>3.67</span></div>
+          <div className="gpa-badge">
+            Overall GPA: <span>{gpa == null ? "—" : gpa.toFixed(2)}</span>
+          </div>
         </div>
+        {err && <div className="alert alert-error" role="alert">{err}</div>}
       </section>
 
-      {/* Results tables */}
       <section className="container results-tables">
-        {Object.entries(resultsData).map(([semester, list]) => (
-          <div key={semester} className="results-block">
-            <h2 className="semester-title">{semester}</h2>
-            <table className="results-table">
-              <thead>
-                <tr>
-                  <th>Academic Year</th>
-                  <th>Course</th>
-                  <th>Grade</th>
-                </tr>
-              </thead>
-              <tbody>
-                {list.map((row, i) => (
-                  <tr key={i}>
-                    <td>{row.year}</td>
-                    <td>{row.course}</td>
-                    <td className="grade">{row.grade}</td>
+        {loading ? (
+          <p className="muted">Loading…</p>
+        ) : !groups.length ? (
+          <p className="muted">No results yet.</p>
+        ) : (
+          groups.map(g => (
+            <div key={`L${g.level}S${g.semester}`} className="results-block">
+              <h2 className="semester-title">Level {g.level} | Semester {g.semester}</h2>
+              <table className="results-table">
+                <thead>
+                  <tr>
+                    <th>Academic Year</th>
+                    <th>Course</th>
+                    <th>Grade</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ))}
+                </thead>
+                <tbody>
+                  {g.rows.map((r, i) => (
+                    <tr key={i}>
+                      <td>{r.academic_year}</td>
+                      <td>{r.code} – {r.title}</td>
+                      <td className="grade"><strong>{r.grade}</strong></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ))
+        )}
       </section>
-<br></br>
-      {/* Milestones band */}
+
+      <br />
       <Milestones />
     </main>
   );
