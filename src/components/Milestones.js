@@ -1,10 +1,29 @@
+// src/components/Milestones.js
 import { useState } from "react";
 import "../styles/Milestones.css";
+// ⚠️ Use the correct path/name you actually have:
 import UploadAchievementModal from "../components/UploadAchievementModal";
+// If your file is UploadAchievement.js, use:
+// import UploadAchievementModal from "../components/UploadAchievement";
 
-function Milestones() {
-  // 👇 this creates the state variables you were missing
+import { achievements as achApi } from "../api/axios";
+
+function Milestones({ onUploaded }) {
   const [openUpload, setOpenUpload] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  const handleSubmit = async (payload) => {
+    // payload: { title, desc, link, files[], [date] }
+    try {
+      setBusy(true);
+      await achApi.create(payload);
+      // tell the parent (Profile) to refresh the list
+      if (typeof onUploaded === "function") await onUploaded();
+      setOpenUpload(false);
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <section className="milestones">
@@ -19,26 +38,16 @@ function Milestones() {
           className="btn btn-primary"
           type="button"
           onClick={() => setOpenUpload(true)}
+          disabled={busy}
         >
-          Upload Achievements
+          {busy ? "Please wait…" : "Upload Achievements"}
         </button>
       </div>
 
       <UploadAchievementModal
         open={openUpload}
         onClose={() => setOpenUpload(false)}
-        onSubmit={async (payload) => {
-          // TODO: send to backend
-          // const form = new FormData();
-          // form.append("title", payload.title);
-          // form.append("description", payload.desc);
-          // form.append("link", payload.link);
-          // payload.files.forEach(f => form.append("images[]", f));
-          // await fetch("/api/achievements", { method: "POST", body: form });
-
-          // After success, close modal
-          setOpenUpload(false);
-        }}
+        onSubmit={handleSubmit}
       />
     </section>
   );

@@ -1,59 +1,64 @@
-import { useEffect, useState, useRef } from "react";
-import { auth, profile as profileApi } from "../api/axios"; // removed unused api
+// src/pages/Profile.js
+import { useEffect, useRef, useState } from "react";
+import { auth, profile as profileApi, achievements as achApi } from "../api/axios";
 import "../styles/Profile.css";
 import Milestones from "../components/Milestones";
 import AchievementCard from "../components/AchievementCard";
 
 export default function Profile() {
+  // user & avatar
   const [user, setUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true);
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState("");
-
-  // ✅ re-add achievements
-  const [achievements] = useState([
-    {
-      id: "a1",
-      title: "Course Management System",
-      desc:
-        "Built for Enterprise Application Development using React.js, Laravel and SQLite.",
-      link: "https://github.com/your/repo",
-      date: "2024-05-11",
-    },
-    {
-      id: "a2",
-      title: "Mobile News App",
-      desc:
-        "Android app using Java + Firebase for news feed and push notifications.",
-      link: "https://github.com/your/another-repo",
-      date: "2024-03-28",
-    },
-  ]);
-
   const fileRef = useRef(null);
 
-  // Load the signed-in user
+  // achievements
+  const [items, setItems] = useState([]);
+  const [loadingAch, setLoadingAch] = useState(true);
+  const [achError, setAchError] = useState("");
+
+  // load signed-in user
   useEffect(() => {
     let mounted = true;
     (async () => {
       try {
         const { data } = await auth.me();
-        if (mounted) setUser(data);
+        if (mounted) setUser(data.user ?? data);
       } catch {
         setError("Could not load your profile. Please sign in again.");
       } finally {
         if (mounted) setLoadingUser(false);
       }
     })();
+
     return () => {
       mounted = false;
       if (previewUrl) URL.revokeObjectURL(previewUrl);
     };
-  }, [previewUrl]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const studentId = user?.index_number ?? "";
+  // load achievements
+  const loadAchievements = async () => {
+    setLoadingAch(true);
+    setAchError("");
+    try {
+      const { data } = await achApi.list();
+      setItems(Array.isArray(data) ? data : []);
+    } catch {
+      setAchError("Failed to load achievements.");
+    } finally {
+      setLoadingAch(false);
+    }
+  };
 
+  useEffect(() => {
+    loadAchievements();
+  }, []);
+
+  // avatar upload
   const onUploadAvatar = () => fileRef.current?.click();
 
   const onFileChoose = async (e) => {
@@ -66,8 +71,8 @@ export default function Profile() {
       return;
     }
 
-    const localPreview = URL.createObjectURL(file);
-    setPreviewUrl(localPreview);
+    const objUrl = URL.createObjectURL(file);
+    setPreviewUrl(objUrl);
 
     const form = new FormData();
     form.append("avatar", file);
@@ -75,15 +80,14 @@ export default function Profile() {
     try {
       setError("");
       setUploading(true);
-
-      const { data } = await profileApi.uploadAvatar(form);
+      const { data } = await profileApi.uploadAvatar(form); // expects { avatar_url }
       setUser((u) => (u ? { ...u, avatar_url: data.avatar_url } : u));
     } catch {
       setError("Upload failed. Try again.");
       setPreviewUrl("");
     } finally {
       setUploading(false);
-      setTimeout(() => URL.revokeObjectURL(localPreview), 1000);
+      setTimeout(() => URL.revokeObjectURL(objUrl), 1000);
     }
   };
 
@@ -95,7 +99,7 @@ export default function Profile() {
         <p className="muted">Update your personal information and account settings</p>
       </section>
 
-      {/* Profile card */}
+      {/* Profile Card */}
       <section className="container profile-card-wrap">
         <div className="profile-card card">
           <div className="avatar" aria-label="Profile picture">
@@ -112,7 +116,7 @@ export default function Profile() {
             <strong>{loadingUser ? "…" : user?.name || "Guest"}</strong>
             {!loadingUser && (
               <>
-                <span>{studentId}</span>
+                <span>{user?.index_number ?? "—"}</span>
                 <span>{user?.email || ""}</span>
               </>
             )}
@@ -125,6 +129,7 @@ export default function Profile() {
           >
             {uploading ? "Uploading…" : "Update Profile Picture"}
           </button>
+
           <input
             ref={fileRef}
             type="file"
@@ -144,11 +149,18 @@ export default function Profile() {
       {/* Achievements */}
       <section className="container achievements-wrap">
         <h2 className="section-title">My Achievements</h2>
-        {achievements.length === 0 ? (
-          <p className="muted">No achievements yet. Upload from the Milestones section below.</p>
+
+        {achError && (
+          <p className="muted" style={{ color: "#b31e1e" }}>{achError}</p>
+        )}
+
+        {loadingAch ? (
+          <p className="muted">Loading…</p>
+        ) : items.length === 0 ? (
+          <p className="muted">No achievements yet. Upload from the section below.</p>
         ) : (
           <div className="achievements-list">
-            {achievements.map((a) => (
+            {items.map((a) => (
               <AchievementCard key={a.id} achievement={a} />
             ))}
           </div>
@@ -157,7 +169,8 @@ export default function Profile() {
 
       <br />
       <br />
-      <Milestones />
+      {/* Milestones section handles upload */}
+      <Milestones onUploaded={loadAchievements} />
     </main>
   );
 }

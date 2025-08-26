@@ -11,28 +11,41 @@ export default function EnrollModal({ course, onClose, onSuccess }) {
   // If no course, render nothing (hooks already ran)
   if (!course) return null;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setErr("");
-    setBusy(true);
-    try {
-      await csrf();
-      await enrollments.create({
-        offering_id: course.id, // offering id from /api/courses
-        code: key,              // user-entered course code as the “key”
-      });
-      onSuccess?.();   // refresh list in parent
-      onClose?.();     // close modal
-    } catch (ex) {
-      const msg =
-        ex?.response?.data?.message ||
-        ex?.response?.data?.errors?.code?.[0] ||
-        "Enrollment failed. Please try again.";
-      setErr(msg);
-    } finally {
-      setBusy(false);
-    }
-  };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setErr("");
+  setBusy(true);
+  try {
+    await csrf();
+
+    // "CTEC 31023" -> "CTEC 31023" (trim, collapse spaces, uppercase)
+    const codeNormalized = key.trim().replace(/\s+/g, " ").toUpperCase();
+
+    await enrollments.create({
+      offering_id: course.id,       // backend expects this
+      code: codeNormalized,         // keep the space between dept + number
+    });
+
+    onSuccess?.();
+    onClose?.();
+  } catch (ex) {
+    // Surface the real server error so we know what's wrong
+    const payload = ex?.response?.data;
+    console.log("Enroll error payload:", payload);
+
+    const msg =
+      payload?.errors?.offering_id?.[0] ||
+      payload?.errors?.code?.[0] ||
+      payload?.message ||
+      "Enrollment failed. Please try again.";
+    setErr(msg);
+  } finally {
+    setBusy(false);
+  }
+};
+
+
+
 
   return (
     <div className="modal-overlay" role="dialog" aria-modal="true">
