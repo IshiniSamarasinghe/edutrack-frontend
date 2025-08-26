@@ -1,62 +1,119 @@
+/* -------------------------------
+   Results page styling (full)
+   ------------------------------- */
+
+/* Safe fallbacks for custom colors if your theme vars are missing */
+:root {
+  --text-900: #0f172a;   /* slate-900 */
+  --text-800: #1e293b;   /* slate-800 */
+  --text-700: #334155;   /* slate-700 */
+  --surface:  #ffffff;
+  --line:     #d9e1ec;   /* soft border */
+  --line-2:   #eef2f7;
+  --muted:    #f8fafc;
+}
+
+/* Page container spacing */
+.results { padding-top: 16px; padding-bottom: 24px; }
+
+/* Header */
+.results-head { padding: 28px 0 8px; }
+
+.results-title-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
 .results h1 {
   font-family: "Playfair Display", serif;
   font-weight: 700;
-  font-size: clamp(26px, 3vw, 28px);
-  margin: 0 0 6px 0;
+  font-size: clamp(26px, 3vw, 32px);
+  margin: 0;
   color: var(--text-900);
 }
+
 .results .muted { color: var(--text-700); }
 
-.results-head { padding: 28px 24px 8px; }
-.results-title-wrap {
-  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
-}
-
+/* GPA badge */
 .gpa-badge {
   background: #e6effc;
   border: 1px solid #c6d7f5;
-  border-radius: 8px;
-  padding: 8px 16px;
+  border-radius: 10px;
+  padding: 8px 14px;
   font-weight: 600;
   color: #1e56b3;
   font-size: 15px;
 }
-.gpa-badge span { font-weight: 700; }
+.gpa-badge span { font-weight: 800; }
 
-.results-block { margin: 28px 0; }
+/* Blocks */
+.results-block { margin: 24px 0 8px; }
 
-.semester-title {
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--text-800);
-  margin-bottom: 12px;
-}
-
+/* Table */
 .results-table {
   width: 100%;
   border-collapse: collapse;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;                 /* keeps rounded corners */
+  box-shadow: 0 8px 18px rgba(2,12,27,.06);
   font-size: 14px;
-  box-shadow: var(--shadow, 0 8px 18px rgba(2,12,27,.08));
 }
+
 .results-table th,
 .results-table td {
-  border: 1px solid #d9e1ec;
-  padding: 10px 14px;
+  padding: 12px 16px;               /* comfy cells */
+  border-bottom: 1px solid var(--line-2);
   text-align: left;
+  vertical-align: middle;
 }
+
 .results-table th {
-  background: #f8fafc;
+  background: var(--muted);
   font-weight: 600;
   color: var(--text-800);
 }
+
+.results-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.results-table tbody tr:hover {
+  background: #fbfdff;              /* soft hover */
+}
+
+/* Helpful cell styles */
+.results-table .title {
+  max-width: 520px;                  /* avoid super-wide titles */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.results-table .mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  letter-spacing: 0.2px;
+}
+
 .results-table .grade {
   text-align: center;
   font-weight: 700;
   color: #1e56b3;
 }
 
-/* Responsive */
+/* Responsive tweaks */
+@media (max-width: 992px) {
+  .results-table { font-size: 13.5px; }
+  .results-table .title { max-width: 420px; }
+}
+
 @media (max-width: 768px) {
-  .results-title-wrap { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .results-title-wrap { flex-direction: column; align-items: flex-start; }
   .gpa-badge { align-self: flex-start; }
+  .results-table { font-size: 13px; }
+  .results-table .title { max-width: 320px; }
 }
