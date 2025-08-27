@@ -120,6 +120,7 @@ export const courses = {
 export const enrollments = {
   create: (payload) => api.post("/api/enrollments", payload),
   mine: () => api.get("/api/my-courses"),
+   remove: (enrollmentId) => api.delete(`/api/enrollments/${enrollmentId}`),
 };
 
 export const results = {

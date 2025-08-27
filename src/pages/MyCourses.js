@@ -60,7 +60,23 @@ export default function MyCourses() {
                 {c.description && <p className="course-desc">{c.description}</p>}
 
                 <div className="course-actions">
-                  <span className="enrolled"><span className="dot" /> Enrolled</span>
+                  <button
+                    type="button"
+                    className="btn btn-primary sm"
+                    onClick={async () => {
+                      if (!window.confirm("Unenroll from this course?")) return;
+                      try {
+                        await enrollments.remove(c.enrollment_id);
+                        setItems((prev) =>
+                          prev.filter((x) => x.enrollment_id !== c.enrollment_id)
+                        );
+                      } catch (e) {
+                        alert(e?.response?.data?.message || "Unenroll failed. Please try again.");
+                      }
+                    }}
+                  >
+                    Unenroll
+                  </button>
                 </div>
               </article>
             ))}
@@ -70,3 +86,4 @@ export default function MyCourses() {
     </main>
   );
 }
+

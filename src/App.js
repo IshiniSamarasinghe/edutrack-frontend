@@ -12,10 +12,20 @@ import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 
+// ---- Safe helpers ----
+function safeGetUser(key = "edutrack_user") {
+  const raw = window.localStorage.getItem(key);
+  if (!raw || raw === "undefined" || raw === "null") return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
 // Simple auth guard based on localStorage (set after login/signup)
 function RequireAuth({ children }) {
-  const raw = window.localStorage.getItem("edutrack_user");
-  const user = raw ? JSON.parse(raw) : null;
+  const user = safeGetUser();
   return user ? children : <Navigate to="/login" replace />;
 }
 

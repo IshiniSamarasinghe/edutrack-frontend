@@ -28,11 +28,19 @@
   color: white;
   background-color: #FFA60C;
   font-size: 13px;
+  display: inline-block;
+  text-decoration: none;
+  transition: background-color .15s ease, transform .15s ease;
 }
 .hero-cta:hover {
   text-decoration: none;
   background-color: #ffb733;
   color: #fff;
+}
+.hero-cta:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+  transform: translateY(-1px);
 }
 
 /* ===== Section heading (reusable) ===== */
@@ -83,10 +91,11 @@
   font-weight: 600;
   color: var(--brand-600);
   text-decoration: none;
+  transition: color .15s ease, opacity .15s ease;
 }
 .overview-card .link-cta:hover {
   text-decoration: none;
-  font-weight: 400; 
+  font-weight: 400;
   color: var(--brand-400);
 }
 
@@ -103,6 +112,8 @@
   margin-bottom: 12px;
 }
 .pill {
+  flex: 1 1 auto;       /* ✅ let it grow but also truncate nicely */
+  min-width: 0;         /* ✅ allow text-overflow to work in flex row */
   font-weight: 400;
   color: var(--text-900);
   white-space: nowrap;
@@ -121,10 +132,24 @@
   background: #fff;
   color: var(--brand-600);
   border: 1px solid var(--brand-600);
+  transition: background-color .15s ease, color .15s ease, border-color .15s ease;
 }
 .btn-outline:hover {
   background: var(--brand-600);
   color: #fff;
+}
+.btn:focus-visible {
+  outline: 2px solid var(--brand-400);
+  outline-offset: 2px;
+}
+
+/* no underline for link-buttons */
+a.btn,
+a.btn-outline,
+.overview-card .list-row .btn,
+.overview-card .list-row .btn:hover,
+.overview-card .list-row .btn:focus {
+  text-decoration: none !important;
 }
 
 /* Quick Actions */
@@ -140,10 +165,20 @@
   padding: 10px 12px;
   margin-bottom: 12px;
   cursor: pointer;
+  text-decoration: none;   /* for <a>/<Link> */
+  color: inherit;
+  transition: background-color .15s ease, border-color .15s ease, transform .1s ease;
 }
 .action-row:hover {
   border-color: #cbd5e1;
   background: #eef3fb;
+}
+.action-row:active {
+  transform: translateY(1px);
+}
+.action-row:focus-visible {
+  outline: 2px solid var(--brand-400);
+  outline-offset: 2px;
 }
 .action-text strong {
   display: block;
@@ -153,14 +188,31 @@
 .action-text span {
   display: block;
   font-size: 13px;
-  color: var(--text-400);
-  margin-top: 10px;
   color: #0D5BB7;
+  margin-top: 10px;
 }
 .action-icon {
   opacity: 0.7;
 }
 
+/* Skeleton (for loading rows) */
+.skeleton {
+  position: relative;
+  color: transparent !important;
+  background: #e9eef6;
+  overflow: hidden;
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.6) 50%, rgba(255,255,255,0) 100%);
+  animation: shimmer 1.2s infinite;
+}
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
 
 /* Responsive */
 @media (max-width: 1024px) {
