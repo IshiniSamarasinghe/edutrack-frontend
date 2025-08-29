@@ -1,0 +1,16 @@
+/* Make sortable header buttons look like normal <th> text */
+.admin-table th .th-btn {
+  all: unset;              /* remove default button/link styles */
+  color: inherit;          /* use the th text color (black) */
+  font: inherit;           /* match th font */
+  cursor: pointer;         /* still shows it's clickable */
+}
+
+.admin-table th .th-btn:focus-visible {
+  outline: 2px solid #333; /* accessible focus */
+  outline-offset: 2px;
+}
+
+.admin-table th .th-btn:hover {
+  text-decoration: underline; /* optional */
+}

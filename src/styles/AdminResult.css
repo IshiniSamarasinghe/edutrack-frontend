@@ -1,0 +1,60 @@
+/* Page scope */
+.admin-results .result-upload-card {
+  padding: 20px;
+  margin: 20px;
+  background: #fff;
+  border: 1px solid var(--line, #e5e7eb);
+  border-radius: 10px;
+  box-shadow: 0 8px 22px rgba(2,12,27,.06);
+}
+
+.admin-results .result-upload-card h3 {
+  margin: 0 0 16px;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--admin-ink, #171717);
+}
+
+.admin-results .result-upload-form {
+  display: grid;
+  gap: 14px;
+}
+
+.admin-results .result-upload-form input[type="file"] {
+  padding: 8px;
+  border: 1px solid var(--line, #d1d5db);
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.admin-results .result-upload-form .muted {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 4px 0 12px;
+}
+
+/* Force button color here so globals can't override */
+.admin-results .btn-upload {
+  background: #0D5BB7 !important;  /* your accent */
+  color: #fff !important;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: 800;
+  letter-spacing: .2px;
+  box-shadow: 0 6px 14px rgba(180,85,45,.18);
+  transition: background .2s, transform .08s;
+  width: fit-content;
+}
+.admin-results .btn-upload:hover { background: #ffffff !important; border: 1px solid #0D5BB7; color: rgb(5, 5, 5)B7;}
+.admin-results .btn-upload:active { transform: translateY(1px); }
+
+.admin-results .upload-msg {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+  font-weight: 600;
+}
