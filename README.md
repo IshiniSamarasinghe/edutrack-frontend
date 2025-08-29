@@ -1,70 +1,104 @@
-# Getting Started with Create React App
+erDiagram
+    USER ||--o{ ENROLLMENT : enrolls
+    COURSE ||--o{ ENROLLMENT : has
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+    USER ||--o{ RESULT : receives
+    COURSE ||--o{ RESULT : produces
 
-## Available Scripts
+    USER ||--o{ ACHIEVEMENT : records
+    ACHIEVEMENT ||--o{ ACHIEVEMENT_MEDIA : has
 
-In the project directory, you can run:
+    ADMIN ||--o{ CSV_BATCH : uploads
+    CSV_BATCH ||--o{ RESULT : imports
 
-### `npm start`
+    USER {
+      bigint id PK
+      string name
+      string email UK
+      string password_hash
+      string student_no UK
+      enum level  "3RD, 4TH"
+      string phone nullable
+      string avatar_url nullable
+      datetime created_at
+      datetime updated_at
+    }
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+    ADMIN {
+      bigint id PK
+      string name
+      string email UK
+      string password_hash
+      string role  "e.g., super, staff"
+      datetime created_at
+      datetime updated_at
+    }
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+    COURSE {
+      bigint id PK
+      string code UK
+      string title
+      text description nullable
+      int credits
+      enum status "ACTIVE, ARCHIVED"
+      datetime created_at
+      datetime updated_at
+    }
 
-### `npm test`
+    ENROLLMENT {
+      bigint id PK
+      bigint user_id FK "-> USER.id"
+      bigint course_id FK "-> COURSE.id"
+      enum status "ENROLLED, DROPPED"
+      date enrolled_at
+      date dropped_at nullable
+      datetime created_at
+      datetime updated_at
+      UNIQUE (user_id, course_id)
+    }
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+    RESULT {
+      bigint id PK
+      bigint user_id FK "-> USER.id"
+      bigint course_id FK "-> COURSE.id"
+      string grade_letter  "A+, A, A-, …"
+      decimal grade_point  "0.00–4.00"
+      decimal marks nullable
+      int attempt_no default 1
+      bigint csv_batch_id FK nullable "-> CSV_BATCH.id"
+      datetime published_at
+      datetime created_at
+      datetime updated_at
+      UNIQUE (user_id, course_id, attempt_no)
+    }
 
-### `npm run build`
+    CSV_BATCH {
+      bigint id PK
+      bigint admin_id FK "-> ADMIN.id"
+      string filename
+      string notes nullable
+      datetime uploaded_at
+      datetime created_at
+      datetime updated_at
+    }
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+    ACHIEVEMENT {
+      bigint id PK
+      bigint user_id FK "-> USER.id"
+      string title
+      text description nullable
+      string link nullable
+      date achieved_on nullable
+      datetime created_at
+      datetime updated_at
+    }
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+    ACHIEVEMENT_MEDIA {
+      bigint id PK
+      bigint achievement_id FK "-> ACHIEVEMENT.id"
+      enum media_type "IMAGE, DOCUMENT, VIDEO"
+      string file_path
+      string url
+      datetime created_at
+      datetime updated_at
+    }
