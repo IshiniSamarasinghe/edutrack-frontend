@@ -25,12 +25,7 @@
   margin: 0;
 }
 
-/* CTA button on the right */
-.search-btn{
-  height: 42px;
-  border-radius: 10px;
-  font-weight: 700;
-}
+/* Removed old .search-btn override that broke button consistency */
 
 /* Ensure descriptions show on cards */
 .mycourses .course-desc { display: block; }
@@ -48,4 +43,12 @@
     justify-self: start;         /* button under title on mobile */
     margin-top: 8px;
   }
+}
+.mycourses .btn.btn-primary {
+  height: 42px;              /* same as Enroll button */
+  padding: 12px 20px;            /* consistent horizontal padding */
+  font-size: 14px;            /* match text size */
+  font-weight: 600;           /* same boldness */
+  border-radius: 10px;        /* consistent radius */
+  line-height: 1.2;
 }

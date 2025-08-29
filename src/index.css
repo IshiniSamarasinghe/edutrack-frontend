@@ -63,10 +63,43 @@ h3{font-size:22px; font-weight:600}
 }
 .btn-primary{background:var(--brand-600); color:#fff}
 .btn-outline{background:#fff; color:var(--brand-600); border-color:var(--brand-600)}
-.btn:hover{filter:brightness(.98)}
+
+/* === FIXED BUTTON HOVER/FOCUS === */
+.btn:hover { filter: none; } /* remove brightness() */
+.btn:focus,
+.btn:focus-visible {
+  box-shadow: none; 
+  outline: none;
+}
+
+/* Primary buttons hover: white bg, blue border, blue text */
+.btn.btn-primary:hover,
+.btn.btn-primary:focus,
+.btn.btn-primary:focus-visible {
+  background: #fff;
+  border: 1px solid #1D54AF;
+  color: #1D54AF;
+}
+
 a{color:var(--brand-600); text-decoration:none}
 a:hover{text-decoration:underline}
 
 /* Make Navbar/Footer use the theme easily */
 .navbar{position:sticky; top:0; z-index:50; background:#fff}
 .footer{background:var(--brand-600); color:#fff}
+
+
+/* Enroll/Unenroll button hover */
+button.btn.btn-primary:hover,
+button.btn.btn-primary:focus,
+button.btn.btn-primary:focus-visible,
+a.btn.btn-primary:hover,
+a.btn.btn-primary:focus,
+a.btn.btn-primary:focus-visible {
+  background: #fff !important;       /* white bg */
+  border: 1px solid #1D54AF !important; /* blue border */
+  color: #1D54AF !important;          /* blue text */
+  box-shadow: none !important;        /* remove glow */
+  filter: none !important;            /* cancel brightness */
+  outline: none !important;
+}

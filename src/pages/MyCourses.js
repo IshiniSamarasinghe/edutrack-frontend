@@ -34,7 +34,8 @@ export default function MyCourses() {
             </p>
           </div>
 
-          <Link to="/courses" className="btn btn-primary search-btn">
+          {/* Clean: just use btn btn-primary */}
+          <Link to="/courses" className="btn btn-primary">
             Search Courses
           </Link>
         </div>
@@ -86,4 +87,3 @@ export default function MyCourses() {
     </main>
   );
 }
-

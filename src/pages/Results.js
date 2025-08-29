@@ -55,7 +55,7 @@ export default function Results() {
                 <th>Credits</th>
                 <th>Academic Year</th>
                 <th>Grade</th>
-                <th>GP</th>
+                <th>GPA</th>
               </tr>
             </thead>
             <tbody>

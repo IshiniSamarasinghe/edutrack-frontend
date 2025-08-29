@@ -65,7 +65,9 @@ export default function AdminUsers() {
   }, [load]);
 
   const onSort = (key) => {
-    setSort((s) => (s.key === key ? { key, dir: s.dir === "asc" ? "desc" : "asc" } : { key, dir: "asc" }));
+    setSort((s) =>
+      s.key === key ? { key, dir: s.dir === "asc" ? "desc" : "asc" } : { key, dir: "asc" }
+    );
     setPage(1);
   };
 
@@ -109,7 +111,10 @@ export default function AdminUsers() {
           <div className="spacer" />
           <input
             value={query}
-            onChange={(e) => { setQuery(e.target.value); setPage(1); }}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setPage(1);
+            }}
             placeholder="Search name or email…"
             className="btn"
             style={{ minWidth: 260 }}
@@ -124,6 +129,8 @@ export default function AdminUsers() {
                 <th>Avatar</th>
                 <th>{headerBtn("Name", "name")}</th>
                 <th>{headerBtn("Email", "email")}</th>
+                {/* NEW */}
+                <th>{headerBtn("Achievements", "achievements_count")}</th>
                 <th>{headerBtn("Verified", "email_verified_at")}</th>
                 <th>{headerBtn("Created", "created_at")}</th>
                 <th>{headerBtn("Updated", "updated_at")}</th>
@@ -133,34 +140,45 @@ export default function AdminUsers() {
 
             <tbody>
               {loading ? (
-                <tr><td colSpan={8}>Loading…</td></tr>
+                <tr>
+                  <td colSpan={9}>Loading…</td>
+                </tr>
               ) : err ? (
-                <tr><td colSpan={8} className="mono" style={{ color: "#b03343" }}>{err}</td></tr>
+                <tr>
+                  <td colSpan={9} className="mono" style={{ color: "#b03343" }}>
+                    {err}
+                  </td>
+                </tr>
               ) : rows.length === 0 ? (
-                <tr><td colSpan={8} className="muted">No users found.</td></tr>
+                <tr>
+                  <td colSpan={9} className="muted">
+                    No users found.
+                  </td>
+                </tr>
               ) : (
                 rows.map((u) => (
                   <tr key={u.id}>
                     <td className="mono">{u.id}</td>
-
-                    {/* Avatar cell with one-shot onError */}
                     <td>
                       <img
                         src={pickAvatar(u)}
                         alt="avatar"
                         style={{ width: 32, height: 32, borderRadius: "50%", objectFit: "cover" }}
                         onError={(e) => {
-                          e.currentTarget.onerror = null; // avoid infinite loop
+                          e.currentTarget.onerror = null;
                           e.currentTarget.src = AV_PLACEHOLDER;
                         }}
                       />
                     </td>
-
                     <td>{u.name}</td>
                     <td className="mono">{u.email}</td>
+                    {/* NEW */}
+                    <td className="mono">{u.achievements_count ?? 0}</td>
                     <td>
                       {u.email_verified_at ? (
-                        <span className="pill pill-green" title={fmt(u.email_verified_at)}>verified</span>
+                        <span className="pill pill-green" title={fmt(u.email_verified_at)}>
+                          verified
+                        </span>
                       ) : (
                         <span className="pill pill-muted">unverified</span>
                       )}
@@ -198,7 +216,11 @@ export default function AdminUsers() {
           <button className="btn" disabled={page <= 1 || loading} onClick={() => setPage((p) => Math.max(1, p - 1))}>
             Prev
           </button>
-          <button className="btn" disabled={page >= meta.last_page || loading} onClick={() => setPage((p) => Math.min(meta.last_page, p + 1))}>
+          <button
+            className="btn"
+            disabled={page >= meta.last_page || loading}
+            onClick={() => setPage((p) => Math.min(meta.last_page, p + 1))}
+          >
             Next
           </button>
         </div>
@@ -210,7 +232,9 @@ export default function AdminUsers() {
           <div className="modal-card" onClick={(e) => e.stopPropagation()}>
             <div className="modal-head">
               <h3>User #{viewData.id}</h3>
-              <button className="btn btn-ghost" onClick={() => setViewOpen(false)}>Close</button>
+              <button className="btn btn-ghost" onClick={() => setViewOpen(false)}>
+                Close
+              </button>
             </div>
 
             {/* Big avatar preview with one-shot fallback */}
@@ -228,11 +252,26 @@ export default function AdminUsers() {
             </div>
 
             <div className="form-grid" style={{ maxWidth: 620 }}>
-              <div className="form-row"><label>Name</label><input readOnly value={viewData.name || ""} /></div>
-              <div className="form-row"><label>Email</label><input readOnly value={viewData.email || ""} /></div>
-              <div className="form-row"><label>Email verified at</label><input readOnly value={fmt(viewData.email_verified_at)} /></div>
-              <div className="form-row"><label>Created</label><input readOnly value={fmt(viewData.created_at)} /></div>
-              <div className="form-row"><label>Updated</label><input readOnly value={fmt(viewData.updated_at)} /></div>
+              <div className="form-row">
+                <label>Name</label>
+                <input readOnly value={viewData.name || ""} />
+              </div>
+              <div className="form-row">
+                <label>Email</label>
+                <input readOnly value={viewData.email || ""} />
+              </div>
+              <div className="form-row">
+                <label>Email verified at</label>
+                <input readOnly value={fmt(viewData.email_verified_at)} />
+              </div>
+              <div className="form-row">
+                <label>Created</label>
+                <input readOnly value={fmt(viewData.created_at)} />
+              </div>
+              <div className="form-row">
+                <label>Updated</label>
+                <input readOnly value={fmt(viewData.updated_at)} />
+              </div>
             </div>
           </div>
         </div>

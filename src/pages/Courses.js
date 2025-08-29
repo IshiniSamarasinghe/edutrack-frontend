@@ -92,7 +92,7 @@ function Courses() {
           </select>
           <button
             type="button"
-            className="btn btn-primary search-btn"
+            className="btn btn-primary search-btn1"
             onClick={() => load(level)}
           >
             Search Courses

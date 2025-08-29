@@ -16,7 +16,7 @@
   grid-template-columns: 240px 1fr;
   min-height: 100vh;
   background: #f6f7fb;
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+  font-family:"work sans", Georgia, serif;
 }
 
 /* ========== Sidebar ========== */
@@ -35,14 +35,14 @@
   align-items: center;
   gap: 10px;
   padding: 4px 6px 14px;
+   
 }
-.admin-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
+
+.admin-brand h4 {
+  color: white;
+  font-size: 22px;
 }
+ 
 .admin-brand-text strong {
   display: block;
   font-weight: 800;
@@ -53,6 +53,14 @@
   font-size: 12px;
   opacity: 0.9;
   color: #fff;
+  margin-top: -50px;
+}
+
+.admin-brand-text hr{
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.4); /* subtle white line */
+  margin: 12px 0;
+  width: 170px;
 }
 
 .admin-menu {
@@ -147,7 +155,8 @@
 
 .kpis {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
+  justify-content: center;   /* center the grid as a block */
   gap: 16px;
 }
 .kpi-card {

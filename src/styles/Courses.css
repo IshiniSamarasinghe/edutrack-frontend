@@ -8,15 +8,31 @@
 }
 
 /* Make the Enroll button blue in the course cards */
+/* Make the Enroll button blue in the course cards */
+/* Base (fix selector): if you want this on all Enroll buttons in cards */
 .course-actions .btn.btn-primary {
   background: var(--brand-600);
   border-color: var(--brand-600);
   color: #fff;
 }
-.course-actions .btn.btn-primary:hover {
-  background: white;
+
+/* Hover/focus: white bg, blue border/text; kill global filter & glow */
+.course-actions .btn.btn-primary.search-btn1:hover,
+.course-actions .btn.btn-primary.search-btn1:focus,
+.course-actions .btn.btn-primary.search-btn1:focus-visible {
+  background: #fff !important;
+  border: 1px solid #1D54AF !important;
+  color: #1D54AF !important;
+  filter: none !important;     /* overrides .btn:hover filter */
+  box-shadow: none !important; /* removes blue glow */
+  outline: none;               /* optional */
+}
+
+.btn btn-primary sm:hover{
+  color:#1D54AF ;
   border: 1px solid #1D54AF;
-  color: #1D54AF;
+  background-color: white;
+
 }
 
 .courses .muted{ color: var(--text-700); }

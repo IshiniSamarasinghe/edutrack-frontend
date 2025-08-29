@@ -34,8 +34,9 @@
 }
 .hero-cta:hover {
   text-decoration: none;
-  background-color: #ffb733;
-  color: #fff;
+  background-color: white;
+  color: #0D5BB7;
+  border: 1px solid #0D5BB7;
 }
 .hero-cta:focus-visible {
   outline: 2px solid #fff;

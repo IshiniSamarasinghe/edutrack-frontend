@@ -30,10 +30,11 @@ export default function AdminShell() {
     <div className="admin-shell">
       <aside className="admin-aside">
         <div className="admin-brand">
-          <div className="admin-dot" />
+          
           <div className="admin-brand-text">
-            <strong>EduTrack</strong>
+            <h4>EduTrack</h4>
             <span>Admin</span>
+            <hr></hr>
           </div>
         </div>
 
