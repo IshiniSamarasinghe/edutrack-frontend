@@ -4,7 +4,7 @@ import axios from "axios";
 /** ------------------------------------------------------------------------
  * Base config
  * --------------------------------------------------------------------- */
-const API_BASE = (process.env.REACT_APP_API_URL || "http://localhost:8001").replace(/\/+$/, "");
+const API_BASE = (process.env.REACT_APP_API_URL || "http://54.151.198.64:80").replace(/\/+$/, "");
 
 const api = axios.create({
   baseURL: API_BASE,
